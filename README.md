@@ -6,7 +6,7 @@ There is a textarea that can edit different text files which are selectable with
 
 It's built with the `create-react-app` utility.
 
-Indexed DB storage is used.
+By default data is stored in Indexed DB, but a RemoteStorage backend can be also be added.
 
 
 ## Usage
