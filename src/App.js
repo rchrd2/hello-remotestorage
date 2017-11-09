@@ -3,6 +3,8 @@ import RemoteStorage from 'remotestoragejs';
 
 const remoteStorage = new RemoteStorage({logging: true});
 
+const dataPath = 'hello-remote-storage-data';
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -10,7 +12,7 @@ class App extends Component {
     this.fileChoices = [
       'hello.txt',
       'world.txt',
-      'lorum.txt',
+      'lorem.txt',
     ]
 
     this.state = {
@@ -20,22 +22,20 @@ class App extends Component {
       fileName: this.fileChoices[0],
     };
 
+    // For debugging, create easy to access reference
     window.remoteStorage = remoteStorage;
 
-    remoteStorage.access.claim('*', 'rw');
-    remoteStorage.caching.enable('/')
+    remoteStorage.access.claim(dataPath, 'rw');
+    remoteStorage.caching.enable('/' + dataPath + '/')
 
-
-    let client = this.client = remoteStorage.scope('/');
-
+    this.client = remoteStorage.scope('/' + dataPath + '/');
 
     // For demo puproses, console.log all data
-    // Get all items in the "/" category/folder
-    client.getAll('').then(objects => {
+    // Get all items in the dataPath category/folder
+    this.client.getAll('').then(objects => {
       this.setState({'all': objects});
       console.log(objects)
     });
-
 
     this.getListing();
     this.loadFile(this.state.fileName);
@@ -68,7 +68,6 @@ class App extends Component {
   }
 
   saveFile(fileName, data) {
-    // Update storage
     this.client.storeFile('text/plain', fileName, data).then(() => {
       console.log("data has been saved");
       this.getListing();
@@ -76,7 +75,6 @@ class App extends Component {
   }
 
   getListing() {
-    // List all items in the "/" category/folder
     this.client.getListing('').then(listing => {
       this.setState({'listing': listing});
       console.log(listing)
