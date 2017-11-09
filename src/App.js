@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
-
 import RemoteStorage from 'remotestoragejs';
-
 
 const remoteStorage = new RemoteStorage({logging: true});
 
