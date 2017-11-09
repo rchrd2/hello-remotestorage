@@ -11,3 +11,16 @@ textarea {
   font-size: 14px;
   margin: 10px 0;
 }
+
+.App-intro > div {
+  margin-bottom: 30px;
+}
+
+a { color: grey; }
+button {
+  background-color: lightblue;
+  border-radius: 3px;
+  border: 2px solid black;
+  color: black;
+  margin-top: 5px;
+}

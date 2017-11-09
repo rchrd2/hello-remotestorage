@@ -20,6 +20,8 @@ class App extends Component {
       fileName: this.fileChoices[0],
     };
 
+    window.remoteStorage = remoteStorage;
+
     remoteStorage.access.claim('*', 'rw');
     remoteStorage.caching.enable('/')
 
@@ -52,6 +54,11 @@ class App extends Component {
     this.loadFile(e.target.value);
   }
 
+  connect() {
+    var account = prompt('What is your account (eg name@example.com)?');
+    remoteStorage.connect(account)
+  }
+
   loadFile(fileName) {
     this.client.getFile(fileName).then(file => {
       console.log(file);
@@ -79,8 +86,18 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <p><b>This example stores using indexed db</b></p>
         <div className="App-intro">
+          <div>
+            <p><b>RemoteStorageJS Examle App</b></p>
+            <p>By default data is stored in Indexed DB, but a RemoteStorage backend can be also be added.</p>
+          </div>
+          <div>
+            <p>Click here to connect to a RemoteStorage backend such as <a href="https://5apps.com">5apps.com</a>
+            <br/>
+            <button onClick={this.connect}>Connect</button>
+            </p>
+
+          </div>
           <div>
             <label>File:
               <select name="select" value={this.state.fileName} onChange={this.handleSelectChange}>
@@ -89,9 +106,13 @@ class App extends Component {
                 })}
               </select>
             </label>
+            <br/>
+            <textarea rel="user-input" onChange={this.handleInputChange} value={this.state.fileContents}></textarea>
           </div>
-          <textarea rel="user-input" onChange={this.handleInputChange} value={this.state.fileContents}></textarea>
-          <pre>{JSON.stringify(this.state.listing, null, 2)}</pre>
+          <div>Listing output:
+            <pre>{JSON.stringify(this.state.listing, null, 2)}</pre>
+            <br/>
+          </div>
 
         </div>
       </div>
