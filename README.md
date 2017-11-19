@@ -1,12 +1,17 @@
-# Remote storage
+# RemoteStorage Example
 
 Simple `remotestorage.js` demo app built with ReactJS.
 
-There is a textarea that can edit different text files which are selectable with a dropdown menu.
+
+## Features
+
+- Edit text files
+- Upload files
+- Store data locally
+- Connect and disconnect to a RemoteStorage backend
+
 
 It's built with the `create-react-app` utility.
-
-By default data is stored in Indexed DB, but a RemoteStorage backend can be also be added.
 
 
 ## Usage
