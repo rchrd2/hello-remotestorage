@@ -20,28 +20,28 @@ class App extends Component {
       all: null,
       fileContents: '',
       fileName: this.fileChoices[0],
+      connected: remoteStorage.connected
     };
 
     // For debugging, create easy to access reference
     window.remoteStorage = remoteStorage;
-
     remoteStorage.access.claim(dataPath, 'rw');
     remoteStorage.caching.enable('/' + dataPath + '/')
-
     this.client = remoteStorage.scope('/' + dataPath + '/');
 
-    // For demo puproses, console.log all data
-    // Get all items in the dataPath category/folder
-    this.client.getAll('').then(objects => {
-      this.setState({'all': objects});
-      console.log(objects)
-    });
+    ((handler) => {
+      remoteStorage.on('connected', handler);
+      remoteStorage.on('disconnected', handler);
+    })(() => {
+      this.setState({connected: remoteStorage.connected})
+    })
 
     this.getListing();
     this.loadFile(this.state.fileName);
 
     this.handleSelectChange = this.handleSelectChange.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleUploadFormSubmit = this.handleUploadFormSubmit.bind(this);
   }
 
   handleInputChange(e) {
@@ -54,9 +54,31 @@ class App extends Component {
     this.loadFile(e.target.value);
   }
 
+  handleUploadFormSubmit(e) {
+    e.preventDefault();
+    var input = this.refs.fileField;
+    var file = input.files[0];
+    var fileReader = new FileReader();
+
+    fileReader.onload = () => {
+      this.client.storeFile(file.type, file.name, fileReader.result).then(() => {
+        console.log("Upload done")
+        this.getListing();
+        input.value = null;
+      });
+    };
+
+    fileReader.readAsArrayBuffer(file);
+  }
+
   connect() {
     var account = prompt('What is your account (eg name@example.com)?');
-    remoteStorage.connect(account)
+    if (account)
+      remoteStorage.connect(account);
+  }
+
+  disconnect() {
+    remoteStorage.disconnect();
   }
 
   loadFile(fileName) {
@@ -92,7 +114,9 @@ class App extends Component {
           <div>
             <p>Click here to connect to a RemoteStorage backend such as <a href="https://5apps.com">5apps.com</a>
             <br/>
-            <button onClick={this.connect}>Connect</button>
+            {remoteStorage.connected === false ?
+              <button onClick={this.connect}>Connect</button>
+              : <button onClick={this.disconnect}>Disconnect</button>}
             </p>
 
           </div>
@@ -110,6 +134,16 @@ class App extends Component {
           <div>Listing output:
             <pre>{JSON.stringify(this.state.listing, null, 2)}</pre>
             <br/>
+          </div>
+          <div>
+            <div>
+              <p>File Upload:</p>
+              <p>This shows how to upload files using remote storage.</p>
+            </div>
+            <form onSubmit={this.handleUploadFormSubmit}>
+              <input type="file" ref="fileField"/>
+              <input type="submit" />
+            </form>
           </div>
 
         </div>
